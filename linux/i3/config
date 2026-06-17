@@ -190,18 +190,24 @@ bindsym $mod+r mode "resize"
 #}
 
 ###############################################################################
+#exec_always picom -f
+exec_always --no-startup-id picom -b --config ~/.config/picom/picom.conf
 
 force_xinerama yes
 #fake-outputs 1920x1080+0+0,1920x1080+1920+0
 
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
-for_window [class="^.*"] border pixel 1
+for_window [class="^.*"] border pixel 2
 #new_window pixel 1
 default_border pixel 2
 
-#feh --bg-scale --zoom fill ~/Downloads/b2.jpg
+exec_always feh --bg-fill ~/Downloads/b2.jpg
 
-bindsym $mod+d exec rofi -show drun -theme Arc-Dark
+bindsym $mod+d exec rofi -show drun -monitor -5
 bindsym $mod+Return exec kitty
 
+# - - - - - - -
+
+gaps inner 4
+gaps outer 2

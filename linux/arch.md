@@ -93,6 +93,9 @@ if status is-interactive
     set -gx DONT_PROMPT_WSL_INSTALL 1
 ```
 
+## Fix file manager network
+sudo pacman -S gvfs
+
 
 ## P4
 yay -S p4
