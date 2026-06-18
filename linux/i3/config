@@ -198,9 +198,9 @@ force_xinerama yes
 
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
-for_window [class="^.*"] border pixel 2
+for_window [class="^.*"] border pixel 0
 #new_window pixel 1
-default_border pixel 2
+default_border pixel 0
 
 exec_always feh --bg-fill ~/Downloads/b2.jpg
 
@@ -211,3 +211,4 @@ bindsym $mod+Return exec kitty
 
 gaps inner 4
 gaps outer 2
+gaps top 36

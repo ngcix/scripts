@@ -1,7 +1,7 @@
 # Login script
 *Tab S9 5g*
 ```sh
-#!/bin/sh
+#!/system/bin/sh
 PATHS="/data/local/tmp/arch"
 
 mkdir -p $PATHS/dev
@@ -22,16 +22,6 @@ busybox mount -t tmpfs -o size=256M tmpfs $PATHS/dev/shm
 
 busybox chroot $PATHS /bin/su - root
 ```
-
-# Auto run script at boot
-- Add to `/data/adb/service.d`
-- Eg adb_tcp.sh
-```sh
-setprop service.adb.tcp.port 5555
-stop adbd
-start adbd
-```
-
 
 # Docker
 docker-compose.yml

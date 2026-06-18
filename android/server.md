@@ -1,5 +1,135 @@
 # Phantom process
 
+# Arch install
+/data/local/chroot/arch
+/data/adb/arch
+
+
+```sh
+#!/system/bin/sh
+set -eu
+
+ROOT="/data/local/tmp/arch"
+BB="$(command -v busybox 2>/dev/null || true)"
+[ -n "$BB" ] || BB="/system/xbin/busybox"
+
+export PATH=/system/bin:/system/xbin:/vendor/bin:/odm/bin
+
+mounted() {
+    grep -qs " $1 " /proc/mounts
+}
+
+bind_mount() {
+    SRC="$1"
+    DST="$2"
+    mkdir -p "$DST"
+    mounted "$DST" || "$BB" mount -o bind "$SRC" "$DST"
+}
+
+tmpfs_mount() {
+    DST="$1"
+    OPTS="$2"
+    mkdir -p "$DST"
+    mounted "$DST" || "$BB" mount -t tmpfs -o "$OPTS" tmpfs "$DST"
+}
+
+setup_dns() {
+    [ -d "$ROOT/etc" ] || return 0
+
+    TMP="$ROOT/etc/resolv.conf.new"
+    : > "$TMP"
+
+    for KEY in net.dns1 net.dns2 net.dns3 net.dns4; do
+        DNS="$(getprop "$KEY" 2>/dev/null | tr -d '\r')"
+        [ -n "$DNS" ] && echo "nameserver $DNS" >> "$TMP"
+    done
+
+    if [ ! -s "$TMP" ]; then
+        echo "nameserver 1.1.1.1" > "$TMP"
+        echo "nameserver 8.8.8.8" >> "$TMP"
+    fi
+
+    mv "$TMP" "$ROOT/etc/resolv.conf"
+}
+
+start_chroot() {
+    mkdir -p "$ROOT"
+    mkdir -p "$ROOT/dev"
+    mkdir -p "$ROOT/proc"
+    mkdir -p "$ROOT/sys"
+    mkdir -p "$ROOT/sdcard"
+    mkdir -p "$ROOT/run"
+    mkdir -p "$ROOT/tmp"
+
+    bind_mount /dev "$ROOT/dev"
+
+    # /dev/pts thường nên bind riêng
+    mkdir -p "$ROOT/dev/pts"
+    mounted "$ROOT/dev/pts" || "$BB" mount -o bind /dev/pts "$ROOT/dev/pts"
+
+    bind_mount /proc "$ROOT/proc"
+    bind_mount /sys "$ROOT/sys"
+
+    [ -d /sdcard ] && bind_mount /sdcard "$ROOT/sdcard"
+
+    # shm và run
+    mkdir -p "$ROOT/dev/shm"
+    tmpfs_mount "$ROOT/dev/shm" "size=256M,mode=1777,nosuid,nodev"
+    tmpfs_mount "$ROOT/run" "size=32M,mode=0755,nosuid,nodev"
+
+    chmod 1777 "$ROOT/tmp"
+
+    setup_dns
+}
+
+enter_chroot() {
+    exec "$BB" chroot "$ROOT" /usr/bin/env -i \
+        HOME=/root \
+        USER=root \
+        LOGNAME=root \
+        SHELL=/bin/bash \
+        TERM="${TERM:-xterm-256color}" \
+        LANG=C.UTF-8 \
+        PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin \
+        /bin/bash -l
+}
+
+stop_chroot() {
+    for M in \
+        "$ROOT/dev/shm" \
+        "$ROOT/run" \
+        "$ROOT/sdcard" \
+        "$ROOT/sys" \
+        "$ROOT/proc" \
+        "$ROOT/dev/pts" \
+        "$ROOT/dev"
+    do
+        mounted "$M" && "$BB" umount "$M" 2>/dev/null || true
+    done
+}
+
+case "${1:-login}" in
+    start)
+        start_chroot
+        ;;
+    login|enter|shell)
+        start_chroot
+        enter_chroot
+        ;;
+    stop)
+        stop_chroot
+        ;;
+    restart)
+        stop_chroot
+        start_chroot
+        ;;
+    *)
+        echo "Usage: $0 {start|login|stop|restart}" >&2
+        exit 1
+        ;;
+esac
+```
+
 # Git (OK)
 
 # Disk (__)
@@ -17,38 +147,3 @@
 
 
 # For LG G8 ThinQ
-
-### 1. Tình trạng hỗ trợ LineageOS cho LG G8
-Hiện tại, LG G8 ThinQ **không có bản LineageOS Official (chính thức)** từ trang chủ lineageos.org. Tuy nhiên, cộng đồng trên XDA phát triển bản **Unofficial** rất ổn định (thường là Android 13 hoặc 14).
-
-*   **Lưu ý cực kỳ quan trọng:** LG G8 bản Hàn (G820N) muốn cài ROM ngoài thì điều kiện tiên quyết là phải **Unlock Bootloader**. Đối với dòng LG, việc này không đơn giản là gõ lệnh mà phải thông qua kẽ hở **Exploit (như dùng tool QFIL để nạp file boot/abl tinh chỉnh)**.
-
-### 2. Các bước thực hiện cho LG G820N (40c)
-
-#### Bước 1: Unlock Bootloader (Bắt buộc)
-Vì bạn đang ở bản 40c (Android 12), bạn không thể dùng các lệnh fastboot thông thường.
-*   Bạn cần sử dụng công cụ **QFIL** trên máy tính để đưa máy về chế độ EDL.
-*   Tiến hành nạp các file `abl` và `boot` đã được mod để mở khóa fastboot.
-*   *Lưu ý:* Quá trình này sẽ xóa sạch dữ liệu máy.
-
-#### Bước 2: Cài đặt Recovery (OrangeFox hoặc TWRP)
-Sau khi Unlock Bootloader, bạn cần cài một bộ Recovery tùy chỉnh để có thể flash file ROM LineageOS.
-
-#### Bước 3: Flash LineageOS (Unofficial)
-Bạn có thể tìm bản ROM LineageOS cho LG G8 (tên mã: **alphaplus**) trên diễn đàn XDA.
-*   Link tham khảo (XDA): [LG G8 ThinQ ROMs, Kernels, Recovery](https://forum.xda-developers.com/f/lg-g8-thinq-roms-kernels-recoveries-other-dev.8711/)
-*   Thường các bản ROM này sẽ đi kèm hướng dẫn flash qua Recovery.
-
-#### Bước 4: Root (Mục tiêu chính của bạn)
-Vì LineageOS không có sẵn root, sau khi cài xong ROM và khởi động lên máy thành công, bạn làm như sau:
-1.  Tải **Magisk.apk** bản mới nhất.
-2.  Đổi đuôi file `Magisk.apk` thành `Magisk.zip`.
-3.  Vào Recovery (TWRP/OrangeFox), chọn **Install** và chọn file `Magisk.zip` đó.
-4.  Khởi động lại máy. Bây giờ LineageOS của bạn đã có quyền Root hoàn toàn.
-
-### 3. Cảnh báo riêng cho dòng LG G8
-*   **Mất Audio DAC:** Khi sang LineageOS, chip âm thanh Quad DAC đặc trưng của LG có thể không hoạt động tốt hoặc không có giao diện điều chỉnh như ROM gốc (trừ khi bản ROM đó có tích hợp sẵn LG Parts).
-*   **Camera:** Camera gốc của LG sẽ mất, bạn nên cài **Google Camera (GCam)** để có chất lượng ảnh tốt nhất.
-*   **Brick:** Dòng LG rất dễ bị "Hard Brick" nếu nạp sai file trong quá trình Unlock Bootloader. Bạn nên tìm các nhóm "LG G8 Việt Nam" trên Facebook hoặc Telegram để lấy đúng file `abl` và `vbeta` cho bản G820N.
-
-**Tóm lại:** Bạn không thể tải một file LineageOS về rồi dùng ngay mà phải đi qua bước **Unlock Bootloader bằng QFIL** trước. Sau đó cài ROM và flash Magisk là sẽ có Root.
