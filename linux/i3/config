@@ -190,6 +190,25 @@ bindsym $mod+r mode "resize"
 #}
 
 ###############################################################################
+
+bindsym $mod+d exec rofi -show drun -monitor -5
+bindsym $mod+Return exec kitty
+
+# workspace 1 output V0      # màn hình 1 (có polybar)
+# workspace 2 output V0
+# workspace 3 output V1      # màn hình 2 (không có polybar)
+# workspace 4 output V1
+
+#exec_always --no-startup-id i3-msg 'workspace 1; gaps top 37'
+#exec_always --no-startup-id i3-msg 'workspace 2; gaps top 37'
+
+#  – màn hình 2 : không có gap (hoặc giá trị bạn muốn)
+#exec_always --no-startup-id i3-msg 'workspace 3; gaps top 0'
+#exec_always --no-startup-id i3-msg 'workspace 4; gaps top 0'
+
+
+#_____________________________________
+
 #exec_always picom -f
 exec_always --no-startup-id picom -b --config ~/.config/picom/picom.conf
 
@@ -204,11 +223,12 @@ default_border pixel 0
 
 exec_always feh --bg-fill ~/Downloads/b2.jpg
 
-bindsym $mod+d exec rofi -show drun -monitor -5
-bindsym $mod+Return exec kitty
 
-# - - - - - - -
+#_____________________________________
 
 gaps inner 4
 gaps outer 2
-gaps top 36
+gaps top 37
+
+
+# - - - - -
