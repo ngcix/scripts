@@ -21,6 +21,8 @@ busybox mount -o bind /sdcard $PATHS/sdcard
 busybox mount -t tmpfs -o size=256M tmpfs $PATHS/dev/shm
 
 busybox chroot $PATHS /bin/su - root
+
+chroot $PATHS /usr/bin/su - nc -s /usr/bin/fish
 ```
 
 # Docker

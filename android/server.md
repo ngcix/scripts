@@ -127,7 +127,7 @@ case "${1:-login}" in
         echo "Usage: $0 {start|login|stop|restart}" >&2
         exit 1
         ;;
-esac
+
 ```
 
 # Git (OK)

@@ -67,6 +67,12 @@ sudo locale-gen en_US.UTF-8
 sudo sed -i '/^#en_US.UTF-8 UTF-8/s/^#//' /etc/locale.gen
 sudo locale-gen
 
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "LC_ALL=en_US.UTF-8" >> /etc/locale.conf
+
+
+
+
 ## AUR yay
 <!-- sudo pacman -Syu ca-certificates ca-certificates-utils -->
 git clone https://aur.archlinux.org/yay.git
