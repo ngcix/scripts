@@ -192,7 +192,7 @@ bindsym $mod+r mode "resize"
 ###############################################################################
 
 bindsym $mod+d exec rofi -show drun -monitor -5
-bindsym $mod+Return exec kitty
+bindsym $mod+Return exec alacritty
 
 # workspace 1 output V0      # màn hình 1 (có polybar)
 # workspace 2 output V0

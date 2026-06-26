@@ -64,7 +64,7 @@ micro /etc/pacman.conf
 
 ## Locale
 sudo locale-gen en_US.UTF-8
-sudo sed -i '/^#en_US.UTF-8 UTF-8/s/^#//' /etc/locale.gen
+sudo   -i '/^#en_US.UTF-8 UTF-8/s/^#//' /etc/locale.gen
 sudo locale-gen
 
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
