@@ -38,7 +38,7 @@ while true; do
             # [Các lệnh chown, hdparm, và khởi động lại nginx/php-fpm giữ nguyên phía dưới...]
             chroot $ARCH_PATH /usr/bin/chown nc:nc /mnt/hdd 2>/dev/null
             [ -d "$MOUNT_TARGET/repos" ] && chroot $ARCH_PATH /usr/bin/chown -R git:git /mnt/hdd/repos 2>/dev/null
-            [ -d "$MOUNT_TARGET/nextcloud_data" ] && chroot $ARCH_PATH /usr/bin/chown -R http:http /mnt/hdd/nextcloud_data 2>/dev/null
+            [ -d "$MOUNT_TARGET/nextcloud" ] && chroot $ARCH_PATH /usr/bin/chown -R http:http /mnt/hdd/nextcloud 2>/dev/null
             [ -b "$HDD_DISK" ] && chroot $ARCH_PATH /usr/bin/hdparm -S 120 $HDD_DISK > /dev/null 2>&1
             
             chroot $ARCH_PATH /usr/bin/php-fpm
