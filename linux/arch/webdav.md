@@ -3,7 +3,7 @@
 ```
 server {
     listen 443 ssl;
-    server_name 107.98.32.245;
+    server_name localhost;
 
     ssl_certificate     /etc/nginx/ssl/webdav.crt;
     ssl_certificate_key /etc/nginx/ssl/webdav.key;

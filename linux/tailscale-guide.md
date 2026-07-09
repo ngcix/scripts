@@ -31,8 +31,8 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 9000 -j DNAT --to-destination 
 # Add proxy to tailscale
 sudo vim /etc/default/tailscaled
 
-HTTPS_PROXY="http://107.98.150.183:3333"
-HTTP_PROXY="http://107.98.150.183:3333"
+HTTPS_PROXY="http://localhost:3333"
+HTTP_PROXY="http://localhost:3333"
 
 Then restart
 

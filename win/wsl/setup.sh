@@ -62,7 +62,7 @@ echo $gateway_ip
 
 export http_proxy=http://$gateway_ip:9999
 export https_proxy=http://$gateway_ip:9999
-export no_proxy="localhost,127.0.0.1,.samsung.net,107.98.0.0/16,.secsso.net"
+export no_proxy="localhost,127.0.0.1"
 
 
 ### connect Xvfb 

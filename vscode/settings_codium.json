@@ -100,16 +100,6 @@
         "editorBracketHighlight.foreground5": "#ff78ff",
         "editorBracketHighlight.foreground6": "#ffffff",
     },
-    "http.proxy": "http://107.98.150.183:3333/",
-    "http.noProxy": [
-        ".samsung.net",
-        "107.0.0.0/8",
-        "10.0.0.0/8",
-        ".secsso.net",
-        ".samsungif.com",
-        ".samsung.com",
-        "ipaas-mcp.sec.samsung.net"
-    ],
     "files.exclude": {
         "**/.git": false,
     },

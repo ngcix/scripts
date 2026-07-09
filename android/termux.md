@@ -6,7 +6,7 @@ termux-change-repo
 
 ## Remote to laptop
 ```sh
-socat TCP-LISTEN:3389,fork TCP:107.98.32.245:3389
+socat TCP-LISTEN:3389,fork TCP:localhost:3389
 ```
 
 ## Ports
@@ -22,7 +22,7 @@ socat TCP-LISTEN:3389,fork TCP:107.98.32.245:3389
 ```sh
 ssh -R 2222:localhost:2222 \
     -L 3333:localhost:3333 \
-    ntc@107.98.32.245
+    ntc@localhost
 ```
 
 ```sh
@@ -30,7 +30,7 @@ ssh -R 2222:localhost:2222 \
 ssh \
 -R 2222:localhost:2222 \
 -R 3333:localhost:3333 \
-ntc@107.98.32.245 -N -o ServerAliveInterval=60
+ntc@localhost -N -o ServerAliveInterval=60
 
 
 ssh -R 19999:localhost:22 phone@192.168.1.100 -N -f

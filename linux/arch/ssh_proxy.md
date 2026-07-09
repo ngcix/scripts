@@ -10,7 +10,7 @@ Wants=network-online.target
 Type=simple
 User=nc
 Environment=AUTOSSH_GATETIME=0
-ExecStart=/usr/bin/autossh -M 0 -N -T -o BatchMode=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -i /home/nc/.ssh/id_ed25519 -L 3333:localhost:3333 -p 2222 u@107.98.150.183
+ExecStart=/usr/bin/autossh -M 0 -N -T -o BatchMode=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -i /home/nc/.ssh/id_ed25519 -L 3333:localhost:3333 -p 2222 u@localhost
 Restart=always
 RestartSec=5
 

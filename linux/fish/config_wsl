@@ -1,9 +1,8 @@
 if status is-interactive
     set -U fish_greeting ""
-    set -gx http_proxy http://107.98.150.183:3333
-    set -gx https_proxy http://107.98.150.183:3333
-    set -gx all_proxy http://107.98.150.183:3333
-    set -gx no_proxy "*.samsung.net,*.secsso.net,ipaas-mcp.sec.samsung.net,*.samsung.com,*.samsungif.com,107.0.0.0/8"
+    set -gx http_proxy http://localhost:3333
+    set -gx https_proxy http://localhost:3333
+    set -gx all_proxy http://localhost:3333
 
     set -gx HTTP_PROXY $http_proxy
     set -gx HTTPS_PROXY $https_proxy

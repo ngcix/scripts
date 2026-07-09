@@ -12,13 +12,13 @@ Host ssh.dev.azure.com
     Hostname ssh.dev.azure.com
     Port 22
     User git
-    ProxyCommand nc -X connect -x 107.98.150.183:3333 %h %p
+    ProxyCommand nc -X connect -x localhost:3333 %h %p
 
 Host github.com
     Hostname github.com
     Port 22
     User git
-    ProxyCommand nc -X connect -x 107.98.150.183:3333 %h %p
+    ProxyCommand nc -X connect -x localhost:3333 %h %p
 ```
 ## Stop non proxy traffic
 
@@ -50,7 +50,7 @@ Wants=network-online.target
 Type=simple
 User=nc
 Environment=AUTOSSH_GATETIME=0
-ExecStart=/usr/bin/autossh -M 0 -N -T -o BatchMode=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -i /home/nc/.ssh/id_ed25519 -L 3333:localhost:3333 -p 2222 u@107.98.150.183
+ExecStart=/usr/bin/autossh -M 0 -N -T -o BatchMode=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -o ExitOnForwardFailure=yes -i /home/nc/.ssh/id_ed25519 -L 3333:localhost:3333 -p 2222 u@1localhost
 Restart=always
 RestartSec=5
 

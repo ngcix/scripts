@@ -2,10 +2,10 @@
 
 ## temp set proxy
 tee /etc/environment << 'EOF'
-http_proxy="http://107.98.150.183:3333"
-https_proxy="http://107.98.150.183:3333"
-HTTP_PROXY="http://107.98.150.183:3333"
-HTTPS_PROXY="http://107.98.150.183:3333"
+http_proxy="http://localhost:3333"
+https_proxy="http://localhost:3333"
+HTTP_PROXY="http://localhost:3333"
+HTTPS_PROXY="http://localhost:3333"
 no_proxy="localhost,127.0.0.1,localaddress,.samsung.net,.secsso.net,ipaas-mcp.sec.samsung.net,.samsung.com,.samsungif.com"
 NO_PROXY="localhost,127.0.0.1,localaddress,.samsung.net,.secsso.net,ipaas-mcp.sec.samsung.net,.samsung.com,.samsungif.com"
 EOF
@@ -37,14 +37,14 @@ su nc
 sudo pacman -Syu
 
 ## proxy for fish in config file
-set -gx http_proxy http://107.98.150.183:3333
-set -gx https_proxy http://107.98.150.183:3333
-set -gx all_proxy http://107.98.150.183:3333
+set -gx http_proxy http://localhost:3333
+set -gx https_proxy http://localhost:3333
+set -gx all_proxy http://localhost:3333
 
 
 ## GPG proxy
 mkdir -p ~/.gnupg
-echo "http-proxy http://107.98.150.183:3333" >> ~/.gnupg/dirmngr.conf
+echo "http-proxy http://localhost:3333" >> ~/.gnupg/dirmngr.conf
 gpgconf --kill dirmngr
 
 ## Custom pacman downloader
@@ -86,10 +86,9 @@ yay -S turbovnc
 ```
 if status is-interactive
     set -U fish_greeting ""
-    set -gx http_proxy http://107.98.150.183:3333
-    set -gx https_proxy http://107.98.150.183:3333
-    set -gx all_proxy http://107.98.150.183:3333
-    set -gx no_proxy "*.samsung.net,*.secsso.net,ipaas-mcp.sec.samsung.net,*.samsung.com,*.samsungif.com,107.0.0.0/8"
+    set -gx http_proxy http://localhost:3333
+    set -gx https_proxy http://localhost:3333
+    set -gx all_proxy http://localhost:3333
 
     set -gx HTTP_PROXY $http_proxy
     set -gx HTTPS_PROXY $https_proxy
@@ -120,10 +119,9 @@ dbus-run-session nautilus
 ```sh
 if status is-interactive
     set -U fish_greeting ""
-    set -gx http_proxy http://107.98.150.183:3333
-    set -gx https_proxy http://107.98.150.183:3333
-    set -gx all_proxy http://107.98.150.183:3333
-    set -gx no_proxy "*.samsung.net,*.secsso.net,ipaas-mcp.sec.samsung.net,*.samsung.com,*.samsungif.com,107.0.0.0/8"
+    set -gx http_proxy http://localhost:3333
+    set -gx https_proxy http://localhost:3333
+    set -gx all_proxy http://localhost:3333
 
     set -gx HTTP_PROXY $http_proxy
     set -gx HTTPS_PROXY $https_proxy
