@@ -12,7 +12,7 @@ ssh \
 -R 57999:localhost:57999 \
 -R 58000:localhost:58000 \
 -R 58001:localhost:58001 \
-ntc@107.98.32.245
+ntc@localhost
 ```
 
 # In Userland

@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
 # Cấu hình
-HOSTS=("107.98.32.245" "107.98.72.223")  # Thay bằng IP LAN và IP WiFi của máy 1, hoặc hostname nếu có
+HOSTS=("192.168.1.2")  # Thay bằng IP LAN và IP WiFi của máy 1, hoặc hostname nếu có
 USER="ntc"  # Tên user SSH trên máy 1
 PORT=22
 INTERVAL=30  # Thời gian thử lại (giây)

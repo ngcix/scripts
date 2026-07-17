@@ -7,7 +7,7 @@ autossh -M 0 -f -N \
  -R 8888:localhost:8888 \
  -L 9998:localhost:9998 \
  -R 22222:localhost:22222 \
- ntc@107.98.32.245
+ ntc@localhost
 
 autossh -M 0 -f -N \
  -R 2222:localhost:2222 \
@@ -16,4 +16,4 @@ autossh -M 0 -f -N \
  -R 8888:localhost:8888 \
  -L 9998:localhost:9998 \
  -R 22222:localhost:22222 \
- ntc@107.98.72.223
+ ntc@localhost
