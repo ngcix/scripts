@@ -18,12 +18,12 @@ LocalUser
 
 
 
-1.Download toàn bộ file cài đặt về máy tính cursor tại link sau (SRV_USER/Abc!3579)
+## 1.Download toàn bộ file cài đặt về máy tính cursor tại link sau (SRV_USER/Abc!3579)
 \\107.98.47.250\SRV Backup 2\cursorAi_setup\INSTALL_CURSOR_2026
 
 (Nên "Add network location" hoặc "Map Network Drive" trước cho server này tí dùng cho backup file Bitlocker)
 
-2.Join TN Domain (Follow guide Manual AD Join guide 1 phần tuy nhiên theo các bước như sau)
+## 2.Join TN Domain (Follow guide Manual AD Join guide 1 phần tuy nhiên theo các bước như sau)
 - Tạo LocalUser với quyền Admin
 - Join TN domain với thông tin mới ShareAcc như sau
 
@@ -45,7 +45,7 @@ Nếu có popup xác thực vui lòng nhập thông tin của SharedAcc
 => Xong xuôi hêt WIN+L để login vào tài khoản personal AD của bạn, ví dụ
 corp\hieu.pham2/AD_pass (Từ giờ trở đi luôn dùng tài khoản AD cá nhân này login)
 
-3. Bitlocker các ổ đĩa
+## 3. Bitlocker các ổ đĩa
 - Bitlocker như guide ACE_VPN guide, tuy nhiên bạn cần 1 chỗ để lưu file bitlocker này, và do ko thể dùng ổ đĩa trong máy nền cần lưu lên server với thông tin sau
 
 \\107.98.47.250\SRV Backup 2\cursorAi_setup\BACKUP_BITLOCKER (bạn có thể tạo folder knoxid của bạn)
@@ -57,7 +57,7 @@ Abc!3579
 
 -> Nếu vẫn không được, thì "Add network location" hoặc "Map Network Drive" trước cho server này
 
-4. Setup VPN
+## 4. Setup VPN
 
 Lưu ý: bạn phải down đủ hết file ở bước 1 về trước, vì rủi ro setup VPN lỗi bạn sẽ không có mạng để cop các file về nữa do bị ghi đè VPN IP
 

@@ -22,7 +22,7 @@ Host github.com
 ```
 ## Stop non proxy traffic
 
-```
+```     
 Host github.com
     HostName 127.0.0.1
     Port 1
