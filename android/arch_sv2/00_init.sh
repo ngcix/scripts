@@ -52,18 +52,56 @@ echo "Arch chroot initialized"
 
 ################################################################################
 
+# HDD mount with resilience fixes for JMicron USB-SATA bridge
 (
     while true; do
         if [ -b "$HDD_BLOCK" ]; then
             if ! mountpoint -q "$MOUNT_TARGET"; then
+                # Clean up any stale mounts
                 umount -f "$MOUNT_TARGET" >/dev/null 2>&1
                 umount -l "$MOUNT_TARGET" >/dev/null 2>&1
 
+                # Mount HDD with noatime to reduce I/O wear
                 mount -t ext4 -o rw,noatime,context=u:object_r:sdcard_posix:s0 "$HDD_BLOCK" "$MOUNT_TARGET"
-                [ -b "$HDD_DISK" ] && chroot $ROOT /usr/bin/hdparm -S 120 $HDD_DISK > /dev/null 2>&1
+
+                # Reduce SCSI device spindown timeout (prevent aggressive PM)
+                if [ -b "$HDD_DISK" ]; then
+                    chroot $ROOT /usr/bin/hdparm -S 0 $HDD_DISK > /dev/null 2>&1
+                    echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD mounted and spindown disabled" >> "$LOG"
+                fi
+            fi
+        else
+            # HDD is not connected - clean up mount if it exists
+            if mountpoint -q "$MOUNT_TARGET"; then
+                echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD DISCONNECTED - cleaning up mount" >> "$LOG"
+                umount -l "$MOUNT_TARGET" >/dev/null 2>&1
             fi
         fi
-        sleep 5
+        sleep 10
+    done
+) &
+
+# Monitor HDD for unexpected disconnects and log state
+(
+    LAST_STATE="unknown"
+    while true; do
+        if [ -b "$HDD_BLOCK" ]; then
+            if [ "$LAST_STATE" != "connected" ]; then
+                echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD connected" >> "$LOG"
+                LAST_STATE="connected"
+            fi
+        else
+            if [ "$LAST_STATE" != "disconnected" ]; then
+                echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD DISCONNECTED - /dev/block/sdh1 missing" >> "$LOG"
+                # Log current state for debugging
+                echo "=== USB Devices ===" >> "$LOG"
+                lsusb >> "$LOG" 2>&1
+                echo "=== dmesg tail ===" >> "$LOG"
+                dmesg | tail -50 >> "$LOG" 2>&1
+                LAST_STATE="disconnected"
+            fi
+        fi
+        sleep 60
     done
 ) &
 
