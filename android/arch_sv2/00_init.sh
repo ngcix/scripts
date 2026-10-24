@@ -22,7 +22,7 @@ sleep 3
 
 # LAN
 ip link set eth0 up
-ip addr add 192.168.1.169/24 dev eth0 2>/dev/null || true
+ip addr add 192.168.1.69/24 dev eth0 2>/dev/null || true
 ip route add default via 192.168.1.1 dev eth0 2>/dev/null || true
 
 # ADB TCP.
@@ -66,7 +66,7 @@ echo "Arch chroot initialized"
 
                 # Reduce SCSI device spindown timeout (prevent aggressive PM)
                 if [ -b "$HDD_DISK" ]; then
-                    chroot $ROOT /usr/bin/hdparm -S 0 $HDD_DISK > /dev/null 2>&1
+                    chroot $ROOT /usr/bin/hdparm -S 600 $HDD_DISK > /dev/null 2>&1
                     echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD mounted and spindown disabled" >> "$LOG"
                 fi
             fi
@@ -108,15 +108,22 @@ echo "Arch chroot initialized"
 ################################################################################
 
 (
+    LAST_STATE="disconnected"
     while true; do
-        sleep 30
+        sleep 60
         if ! ping -c 1 -W 2 192.168.1.1 >/dev/null 2>&1; then
-            echo "$(date): Lost connection, resetting eth0..."
+            if [ "$LAST_STATE" != "disconnected" ]; then
+                echo "$(date): Lost connection" >> "$LOG"
+                LAST_STATE="disconnected"
+            fi
+            echo "$(date): resetting eth0..."
             ip link set eth0 down
             sleep 1
             ip link set eth0 up
             ip addr add 192.168.1.69/24 dev eth0 2>/dev/null || true
             ip route add default via 192.168.1.1 dev eth0 2>/dev/null || true
+        else
+            LAST_STATE="connected"
         fi
     done
 ) &
