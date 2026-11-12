@@ -12,6 +12,11 @@ Edit LAN interface: DHCP Server -> Advanced ->DHCP-Options
 ```sh
 #!/system/bin/sh
 
+exec > /data/local/tmp/log 2>&1
+set -x
+
+sleep 5
+
 ip rule add from 192.168.1.0/24 lookup rmnet_data0 pref 9000
 
 ip rule add to 192.168.1.0/24 lookup local_network pref 8900
@@ -33,3 +38,38 @@ ip route
 iptables-save
 ip rule show
 ```
+
+# Auto run
+
+### Userdebug/ remounted
+
+1. Add permission and SELinux label
+```sh
+chown root:shell /system/bin/ips
+chmod 755 /system/bin/ips
+chcon u:object_r:system_file:s0 /system/bin/ips
+```
+2. Edit /system/etc/init/init.network.rc
+
+```sh
+service ips_setup /system/bin/sh /system/bin/ips
+    class main
+    user root
+    group root system inet net_admin net_raw
+    disabled
+    oneshot
+    seclabel u:r:su:s0
+
+on property:sys.boot_completed=1
+    start ips_setup
+```
+
+OR
+
+```sh
+on property:sys.boot_completed=1
+    exec u:r:su:s0 root root -- /system/bin/sh /system/bin/ips
+```
+
+### Magisk
+Put script to /data/adb/service.d/__scritp.sh
