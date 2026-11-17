@@ -53,6 +53,7 @@ chroot $ROOT /usr/bin/tailscale up >>"$CHROOT_LOG" 2>&1
 chroot $ROOT /usr/bin/sshd >>"$CHROOT_LOG" 2>&1
 
 echo "Arch chroot initialized"
+setprop sys.arch.init_done 1   # signals 01_net_tune.sh
 
 ################################################################################
 
