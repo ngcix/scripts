@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Port of CachyOS game-performance (cachyos-settings 1.4.4) for Arch / Artix.
+# Usage (Steam launch options): game-performance %command%
+# While the game runs: power-profiles-daemon -> "performance" (intel_pstate/amd-pstate EPP=performance),
+# and screensaver/sleep is inhibited. Profile is restored when the game exits.
+
+if command -v powerprofilesctl &>/dev/null; then
+    PROFILE_CMD="powerprofilesctl"
+elif command -v tlpctl &>/dev/null; then
+    PROFILE_CMD="tlpctl"
+else
+    echo "game-performance: neither powerprofilesctl nor tlpctl found, running without it" >&2
+    exec "$@"
+fi
+
+# Don't fail if the CPU driver doesn't support performance power profile
+if ! "$PROFILE_CMD" list | grep -q 'performance:'; then
+    exec "$@"
+fi
+
+LAUNCH=("$PROFILE_CMD" launch -p performance -r "Launched with game-performance" -- "$@")
+
+# Inhibit screensaver/sleep: systemd (Arch) or elogind (Artix); skip if neither or opted out
+if [ -z "$GAME_PERFORMANCE_SCREENSAVER_ON" ]; then
+    for inhibit in systemd-inhibit elogind-inhibit; do
+        command -v "$inhibit" &>/dev/null &&
+            exec "$inhibit" --why "game-performance is running" "${LAUNCH[@]}"
+    done
+fi
+exec "${LAUNCH[@]}"
