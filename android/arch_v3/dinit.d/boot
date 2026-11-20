@@ -1,0 +1,5 @@
+# Default target started by dinit; add new services as waits-for.d entries or here
+type = internal
+waits-for = tailscaled
+waits-for = sshd
+waits-for.d = /etc/dinit.d/boot.d

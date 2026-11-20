@@ -1,0 +1,19 @@
+#!/bin/bash
+# Keep the Tailscale peer-relay static endpoint in sync with the (dynamic) public IPv4.
+# Router forwards UDP 20999 -> 192.168.1.69. If the ISP changes our IP, the old
+# static endpoint makes peers fall back to DERP.
+# Runs as dinit service "ts-relay" (depends on tailscaled). Installed at /usr/local/bin.
+PORT=${PORT:-20999}
+INTERVAL=${INTERVAL:-300}
+
+echo "$(date): relay endpoint watcher started (port $PORT)"
+while true; do
+    # Public IPv4 as seen by DERP STUN (no third-party service needed)
+    IP=$(tailscale netcheck --format=json 2>/dev/null | sed -n 's/.*"GlobalV4": *"\([0-9.]*\):[0-9]*".*/\1/p')
+    CUR=$(tailscale debug prefs 2>/dev/null | sed -n '/RelayServerStaticEndpoints/{n;s/[^0-9.:]//g;p}')
+    if [[ -n $IP && $CUR != "$IP:$PORT" ]]; then
+        tailscale set --relay-server-port="$PORT" --relay-server-static-endpoints="$IP:$PORT" \
+            && echo "$(date): static endpoint ${CUR:-none} -> $IP:$PORT"
+    fi
+    sleep "$INTERVAL"
+done

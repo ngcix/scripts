@@ -1,0 +1,8 @@
+type = process
+command = /usr/bin/sshd -D -e
+depends-on = early-dirs
+restart = true
+restart-delay = 2
+restart-limit-count = 0
+smooth-recovery = true
+logfile = /var/log/dinit/sshd.log

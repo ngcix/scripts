@@ -1,0 +1,8 @@
+# Sync Tailscale peer-relay static endpoint with public IPv4 (was 02_tailscale_relay.sh)
+type = process
+command = /usr/local/bin/ts-relay-endpoint
+depends-on = tailscaled
+restart = true
+restart-delay = 10
+restart-limit-count = 0
+logfile = /var/log/dinit/ts-relay.log

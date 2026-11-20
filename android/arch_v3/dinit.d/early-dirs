@@ -1,0 +1,3 @@
+# Runtime dirs (/run is a fresh tmpfs every boot)
+type = scripted
+command = /usr/bin/mkdir -p /run/tailscale /var/lib/tailscale /var/log/dinit

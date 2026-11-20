@@ -1,0 +1,9 @@
+type = process
+command = /usr/bin/tailscaled --tun=userspace-networking --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock
+depends-on = early-dirs
+restart = true
+restart-delay = 3
+restart-limit-count = 0
+smooth-recovery = true
+logfile = /var/log/dinit/tailscaled.log
+stop-timeout = 10

@@ -157,3 +157,29 @@ Không cài thêm gói pacman nào. Toolchain chỉ nằm trong `~/Repos/g8-kern
    ```
 6. Nếu kernel mới gặp lỗi khác (USB/HDD không ổn định, mất dữ liệu khi truyền), flash lại `boot_b.img` gốc bằng lệnh `dd` ở trên.
 7. **Sau này cập nhật LineageOS hoặc Magisk** sẽ ghi đè boot. Khi đó cần áp lại bản vá và đóng gói lại.
+
+## 10. Kernel v2: SG/TSO + fakeroot/yay + Docker (build 2026-11-20, CHƯA FLASH)
+
+- Boot image: `/data/local/tmp/kwork/boot_b-v2-sgtso-docker.img`, có thêm một bản trên HDD tại `g8-backup-20261116/`.
+  - sha256 `8d5b08b6d482c43a66f149ceaf1237338135a79c2130d9c5cc09bdf90b46353c`
+  - Ramdisk (Magisk) và DTB giống hệt bản gốc.
+- Bản vá: `~/Repos/g8-kernel/g8-sg-tso-docker.patch`. Config: `~/Repos/g8-kernel/config-v2-sgtso-docker`.
+- Config bật thêm:
+  - fakeroot/yay: `SYSVIPC`, `POSIX_MQUEUE`
+  - Namespace: `PID_NS`, `IPC_NS`, `USER_NS`
+  - Cgroup: `CGROUP_DEVICE`, `CGROUP_PIDS`
+  - Netfilter: `NF_TABLES` + `NFT_*` (nat, masq, ct, fib, compat…), `NETFILTER_XT_MATCH_ADDRTYPE`, `IP6_NF_NAT`, `IP6_NF_TARGET_MASQUERADE`
+  - Network driver: `MACVLAN`, `IPVLAN`, `VXLAN`, `BRIDGE_VLAN_FILTERING` (+ `VLAN_8021Q`, `NET_L3_MASTER_DEV`)
+- Không bật: `CFS_BANDWIDTH`, vì xung đột với `SCHED_WALT` của Qualcomm. Hậu quả là `docker --cpus` không giới hạn được CPU, còn `--cpuset-cpus` vẫn dùng được.
+- Thay đổi thêm ở host tool: `scripts/mkcompile_h` chỉ lấy dòng đầu của `clang -v`, vì ROCm trên máy home khiến clang in thêm dòng "Found HIP installation".
+- Flash và khôi phục: giống mục 9, chỉ thay tên file thành `boot_b-v2-sgtso-docker.img`.
+- Kiểm tra sau khi flash:
+  ```sh
+  ethtool -k eth0 | grep -E 'scatter|tcp-seg'     # on
+  fakeroot true && echo FAKEROOT_OK               # trong chroot
+  bash /tmp/check-config.sh /tmp/kconfig          # chạy lại check của Docker
+  ```
+- Sau khi flash, còn phải làm thêm cho Docker:
+  - Mount cgroup vào `$ROOT/sys/fs/cgroup` trong `00_init.sh`.
+  - Cài `docker` và thêm service `containerd`/`docker` vào dinit.
+  - Đặt `/var/lib/docker` trên rootfs, không đặt trên HDD.
