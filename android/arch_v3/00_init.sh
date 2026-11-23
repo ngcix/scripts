@@ -85,8 +85,8 @@ setprop sys.arch.init_done 1   # signals 01_net_tune.sh
 
                 # Reduce SCSI device spindown timeout (prevent aggressive PM)
                 if [ -b "$HDD_DISK" ]; then
-                    chroot $ROOT /usr/bin/hdparm -S 120 $HDD_DISK >>"$CHROOT_LOG" 2>&1
-                    echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD mounted and spindown disabled" >> "$HDD_LOG"
+                    chroot $ROOT /usr/bin/hdparm -S 241 $HDD_DISK >>"$CHROOT_LOG" 2>&1
+                    echo "$(date '+%Y-%m-%d %H:%M:%S'): HDD mounted and spindown after 30 min" >> "$HDD_LOG"
                 fi
             fi
         else
