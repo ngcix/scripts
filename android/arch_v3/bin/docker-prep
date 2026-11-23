@@ -1,0 +1,8 @@
+#!/bin/bash
+# Prepare the chroot for dockerd (run by dinit service "docker-prep")
+set -e
+/usr/local/bin/cgroups-mount
+# containerd needs a mountinfo entry covering /var/lib/docker; the chroot root isn't a mount point
+mkdir -p /var/lib/docker
+mountpoint -q /var/lib/docker || mount --bind /var/lib/docker /var/lib/docker
+mount --make-rshared /var/lib/docker

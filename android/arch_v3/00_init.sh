@@ -38,6 +38,10 @@ start adbd
 mkdir -p "$ROOT"/{dev/pts,dev/shm,proc,sys,run,sdcard}
 mount -o remount,dev,suid /data
 
+# Make the chroot root a real mount point (docker/containerd need "/" in mountinfo
+# and remount it rprivate). Must happen before all other mounts below.
+mountpoint -q "$ROOT" || mount --bind "$ROOT" "$ROOT"
+
 mountpoint -q "$ROOT/dev" || mount --bind /dev "$ROOT/dev"
 mountpoint -q "$ROOT/dev/pts" || mount -t devpts devpts "$ROOT/dev/pts"
 mountpoint -q "$ROOT/dev/shm" || mount -t tmpfs -o mode=1777,size=256M tmpfs "$ROOT/dev/shm"

@@ -183,3 +183,15 @@ Không cài thêm gói pacman nào. Toolchain chỉ nằm trong `~/Repos/g8-kern
   - Mount cgroup vào `$ROOT/sys/fs/cgroup` trong `00_init.sh`.
   - Cài `docker` và thêm service `containerd`/`docker` vào dinit.
   - Đặt `/var/lib/docker` trên rootfs, không đặt trên HDD.
+
+## 11. Kết quả cuối (2026-11-23, kernel v2 đã flash, MTU 1500)
+
+| | Ban đầu | Chỉ tuning IRQ/RPS | **Kernel v2 (SG/TSO)** |
+|---|---|---|---|
+| Upload phone → home (1 luồng) | ~350 Mbps | ~510 Mbps | **941 Mbps** (0 retransmit) |
+| Download home → phone (1 luồng) | ~710 Mbps | ~933 Mbps | **941 Mbps** |
+| `-P 4` upload / download | – | ~509 / ~933 | **941 / 940** |
+| cpu7 khi upload | 98% (cpu2, 78% hardirq) | 97% (90% hardirq) | **46%** (33% hardirq) |
+
+- Cả hai chiều đã đạt tối đa thực tế của Ethernet 1 Gbps. Không cần jumbo frame nữa, mục 8 không còn cần thiết.
+- Bản vá SG/TSO giúp cpu7 chỉ còn bận khoảng 46% ở tốc độ tối đa, nên còn dư CPU cho rclone, Docker và các service khác.

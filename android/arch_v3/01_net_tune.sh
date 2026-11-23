@@ -42,6 +42,20 @@ apply() {
         echo $IRQ_CPU > /proc/irq/$IRQ/smp_affinity_list && echo "$(date): IRQ $IRQ -> cpu$IRQ_CPU"
     fi
 
+    # Docker networking: dockerd runs with "iptables": false because Arch's iptables
+    # can't rewrite Android's tables (unknown xt extensions). Android's iptables adds
+    # the NAT/forward rules for the default bridge instead.
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+    iptables -w -t nat -C POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE 2>/dev/null ||
+        iptables -w -t nat -I POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE
+    iptables -w -C FORWARD -i docker0 -j ACCEPT 2>/dev/null ||
+        iptables -w -I FORWARD -i docker0 -j ACCEPT
+    iptables -w -C FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT 2>/dev/null ||
+        iptables -w -I FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+    # Android policy routing never consults table main (where docker bridge routes live)
+    ip rule | grep -q '^9000:' || ip rule add to 172.16.0.0/12 lookup main pref 9000
+    ip rule | grep -q '^9001:' || ip rule add from 172.16.0.0/12 lookup main pref 9001
+
     if [ -d /sys/class/net/eth0 ]; then
         [ "$(cat /sys/class/net/eth0/tx_queue_len)" = 3000 ] || echo 3000 > /sys/class/net/eth0/tx_queue_len
         for f in /sys/class/net/eth0/queues/rx-*/rps_cpus; do

@@ -1,0 +1,26 @@
+#!/bin/bash
+# Mount cgroup v1 hierarchies at /sys/fs/cgroup inside the chroot (for docker).
+# /sys is bind-mounted non-recursively, so the chroot sees an empty /sys/fs/cgroup.
+# Android already owns cpu/cpuset/memory/blkio hierarchies -> must reuse their exact options.
+set -u
+B=/sys/fs/cgroup
+mountpoint -q $B || mount -t tmpfs -o mode=755,nosuid,nodev,noexec cgroup_root $B
+
+m() {  # m <dir> <options>
+    mkdir -p $B/$1
+    mountpoint -q $B/$1 || mount -t cgroup -o "nosuid,nodev,noexec,$2" cgroup $B/$1 \
+        || echo "cgroups-mount: failed $1 ($2)" >&2
+}
+# free controllers (not used by Android)
+m devices devices
+m freezer freezer
+m pids pids
+m cpuacct cpuacct
+# shared with Android (same option set required)
+m cpu cpu
+m cpuset cpuset,noprefix
+m memory memory
+m blkio blkio
+# systemd-style named hierarchy some tools expect
+m systemd none,name=systemd
+mount | grep " $B" | awk '{print $3, $6}'

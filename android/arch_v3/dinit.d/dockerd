@@ -1,0 +1,9 @@
+type = process
+# DOCKER_RAMDISK: no pivot_root (parent mount /data is shared on Android -> EINVAL)
+command = /usr/bin/env DOCKER_RAMDISK=true /usr/bin/dockerd
+depends-on = docker-prep
+smooth-recovery = true
+restart = true
+restart-delay = 5
+logfile = /var/log/dinit/dockerd.log
+stop-timeout = 30

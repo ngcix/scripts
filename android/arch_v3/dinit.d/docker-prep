@@ -1,0 +1,5 @@
+# cgroup v1 hierarchies + make /var/lib/docker a mount point (containerd needs
+# mountinfo for it; the chroot root itself is not a mount point)
+type = scripted
+command = /usr/local/bin/docker-prep
+logfile = /var/log/dinit/docker-prep.log

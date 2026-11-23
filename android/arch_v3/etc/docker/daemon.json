@@ -1,0 +1,7 @@
+{
+  "iptables": false,
+  "ip6tables": false,
+  "storage-driver": "overlay2",
+  "runtimes": { "crun": { "path": "/usr/bin/crun" } },
+  "default-runtime": "crun"
+}
